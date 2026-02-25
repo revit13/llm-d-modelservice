@@ -98,7 +98,9 @@ affinity:
   args:
     - --port={{ default 8000 .servicePort }}
     - --vllm-port={{ default 8200 .proxy.targetPort }}
-    - --connector={{ .proxy.connector | default "nixlv2" }}
+    {{- if .proxy.connector }}
+    - --connector={{ .proxy.connector }}
+    {{- end }}
     {{- if hasKey .proxy "zapDevel" }}
     - --zap-devel={{ .proxy.zapDevel }}
     {{- end }}

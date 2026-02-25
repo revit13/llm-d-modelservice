@@ -39,10 +39,10 @@ tracing:
     samplerArg: "1.0"
   # -- Service name overrides for different components
   serviceNames:
-    # -- Service name for vLLM decode instances
-    vllmDecode: "vllm-decode"
-    # -- Service name for vLLM prefill instances
-    vllmPrefill: "vllm-prefill"
+    # -- Service name for vLLM prefill-decode instances
+    vllmPrefillDecode: "vllm-prefill-decode"
+    # -- Service name for vLLM encode instances
+    vllmEncode: "vllm-encode"
     # -- Service name for routing proxy sidecar
     routingProxy: "routing-proxy"
   # -- vLLM-specific tracing options
@@ -242,8 +242,8 @@ routing:
 # @schema
 # additionalProperties: true
 # @schema
-# -- Decode pod configuration
-decode:
+# -- Prefill-Decode pod configuration
+prefillDecode:
   create: true
   autoscaling:
     enabled: false
@@ -323,7 +323,9 @@ decode:
       # items:
       #   type: string
       # @schema
-      args: []
+      args:
+        - "--ec-transfer-config"
+        - '{"ec_connector": "ECExampleConnector", "ec_role": "ec_consumer", "ec_connector_extra_config": {"shared_storage_path": "/shared-ec-cache"}}'
       # @schema
       # items:
       #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
@@ -362,6 +364,8 @@ decode:
       volumeMounts:
         - name: metrics-volume
           mountPath: /.config
+        - name: ec-cache
+          mountPath: /shared-ec-cache
   # @schema
   # type: array
   # items:
@@ -371,6 +375,9 @@ decode:
   volumes:
     - name: metrics-volume
       emptyDir: {}
+    - name: ec-cache
+      persistentVolumeClaim:
+        claimName: ec-cache-pvc
 
   # @schema
   # type: array
@@ -456,8 +463,8 @@ decode:
 # @schema
 # additionalProperties: true
 # @schema
-# Prefill pod configuation
-prefill:
+# Encode pod configuration
+encode:
   create: true
   autoscaling:
     enabled: false
@@ -532,7 +539,10 @@ prefill:
       # items:
       #   type: string
       # @schema
-      args: []
+      args:
+        - "--mm-encoder-only"
+        - "--ec-transfer-config"
+        - '{"ec_connector": "ECExampleConnector", "ec_role": "ec_producer", "ec_connector_extra_config": {"shared_storage_path": "/shared-ec-cache"}}'
       # @schema
       # items:
       #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
@@ -570,6 +580,8 @@ prefill:
       volumeMounts:
         - name: metrics-volume
           mountPath: /.config
+        - name: ec-cache
+          mountPath: /shared-ec-cache
   # @schema
   # type: array
   # items:
@@ -579,6 +591,9 @@ prefill:
   volumes:
     - name: metrics-volume
       emptyDir: {}
+    - name: ec-cache
+      persistentVolumeClaim:
+        claimName: ec-cache-pvc
 
   # @schema
   # type: array

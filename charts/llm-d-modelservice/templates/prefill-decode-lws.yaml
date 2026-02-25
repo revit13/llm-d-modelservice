@@ -1,0 +1,86 @@
+{{- if and .Values.prefillDecode.create .Values.multinode }}
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: {{ include "llm-d-modelservice.prefillDecodeName" . }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- include "llm-d-modelservice.prefillDecodelabels" . | nindent 4 }}
+  {{- $warning := "" }}
+  {{- if .Values.prefillDecode.containers }}
+  {{- $firstContainer := index .Values.prefillDecode.containers 0 }}
+  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.prefillDecode.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer) }}
+  {{- end }}
+  {{- if or .Values.prefillDecode.subGroupExclusiveTopology .Values.prefillDecode.annotations $warning }}
+  annotations:
+  {{- if .Values.prefillDecode.subGroupExclusiveTopology }}
+    leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+  {{- end }}
+  {{- if .Values.prefillDecode.annotations }}
+    {{ toYaml .Values.prefillDecode.annotations | nindent 4 }}
+  {{- end }}
+  {{- if $warning }}
+    llm-d.ai/accelerator-warning: {{ $warning | quote }}
+  {{- end }}
+  {{- end }}
+spec:
+  {{- if not .Values.prefillDecode.autoscaling.enabled }}
+  replicas: {{ ternary .Values.prefillDecode.replicas 1 (hasKey .Values.decode "replicas") }}
+  {{- end }}
+  leaderWorkerTemplate:
+    size: {{ int (include "llm-d-modelservice.numWorkers" .Values.prefillDecode.parallelism) }}
+    {{- if .Values.prefillDecode.subGroupPolicy }}
+    subGroupPolicy:
+    {{- toYaml .Values.prefillDecode.subGroupPolicy | nindent 6 }}
+    {{- end }}
+    workerTemplate:
+      metadata:
+        labels:
+          {{- include "llm-d-modelservice.prefillDecodelabels" . | nindent 10 }}
+        {{- if or .Values.prefillDecode.subGroupExclusiveTopology .Values.prefillDecode.podAnnotations }}
+        annotations:
+        {{- if .Values.prefillDecode.subGroupExclusiveTopology }}
+          leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+        {{- end }}
+        {{- if .Values.prefillDecode.podAnnotations }}
+          {{ toYaml .Values.prefillDecode.podAnnotations | nindent 10 }}
+          {{- end }}
+        {{- end }}
+      spec:
+        {{- /* DEPRECATED; use extraConfig.hostIPC instead */ -}}
+        {{- if hasKey .Values.decode "hostIPC" }}
+        hostIPC: {{ .Values.prefillDecode.hostIPC }}
+        {{- end }}
+        {{- /* DEPRECATED; use extraConfig.hostPID instead */ -}}
+        {{- if hasKey .Values.decode "hostPID" }}
+        hostPID: {{ .Values.prefillDecode.hostPID }}
+        {{- end }}
+        {{- if or (.Values.prefillDecode.initContainers) (eq .Values.routing.proxy.enabled true) }}
+        initContainers:
+        {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 8 }}
+        {{- if .Values.prefillDecode.initContainers }}
+        {{- toYaml .Values.prefillDecode.initContainers | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if hasKey .Values.decode "enableServiceLinks" }}
+        enableServiceLinks: {{ .Values.prefillDecode.enableServiceLinks }}
+        {{- end }}
+        {{- if hasKey .Values.decode "terminationGracePeriodSeconds" }}
+        terminationGracePeriodSeconds: {{ .Values.prefillDecode.terminationGracePeriodSeconds }}
+        {{- end }}
+        {{ (include "llm-d-modelservice.modelPod" (dict "role" "prefill-decode" "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
+        {{- with .Values.prefillDecode.containers }}
+        containers:
+          {{- range . }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "prefill-decode" "container" . "parallelism" $.Values.prefillDecode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.decode)) | nindent 8 }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.prefillDecode.nodeSelector }}
+        nodeSelector:
+          {{- toYaml .Values.prefillDecode.nodeSelector | nindent 10 }}
+        {{- end }}
+        {{- if .Values.prefillDecode.tolerations }}
+        tolerations:
+          {{- toYaml .Values.prefillDecode.tolerations | nindent 10 }}
+        {{- end }}
+{{- end }}

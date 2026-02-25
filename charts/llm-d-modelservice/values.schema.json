@@ -381,7 +381,7 @@
             "required": [],
             "title": "common"
         },
-        "decode": {
+        "prefillDecode": {
             "additionalProperties": true,
             "description": "Decode pod configuration",
             "properties": {
@@ -1984,7 +1984,7 @@
             "title": "multinode",
             "type": "boolean"
         },
-        "prefill": {
+        "encode": {
             "additionalProperties": true,
             "description": " additionalProperties: true @schema Prefill pod configuation",
             "properties": {
@@ -3719,17 +3719,17 @@
                             "required": [],
                             "title": "routingProxy"
                         },
-                        "vllmDecode": {
-                            "default": "vllm-decode",
-                            "description": "Service name for vLLM decode instances",
+                        "vllmPrefillDecode": {
+                            "default": "vllm-prefill-decode",
+                            "description": "Service name for vLLM prefill-decode instances",
                             "required": [],
-                            "title": "vllmDecode"
+                            "title": "vllmPrefillDecode"
                         },
-                        "vllmPrefill": {
-                            "default": "vllm-prefill",
-                            "description": "Service name for vLLM prefill instances",
+                        "vllmEncode": {
+                            "default": "vllm-encode",
+                            "description": "Service name for vLLM encode instances",
                             "required": [],
-                            "title": "vllmPrefill"
+                            "title": "vllmEncode"
                         }
                     },
                     "required": [],

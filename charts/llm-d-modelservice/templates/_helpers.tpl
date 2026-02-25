@@ -63,16 +63,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{ .Values.modelArtifacts.labels | toYaml }}
 {{- end }}
 
-{{/* Create labels for the prefill deployment/LWS */}}
-{{- define "llm-d-modelservice.prefilllabels" -}}
+{{/* Create labels for the encode deployment/LWS */}}
+{{- define "llm-d-modelservice.encodelabels" -}}
 {{ include "llm-d-modelservice.pdlabels" . }}
-llm-d.ai/role: prefill
+llm-d.ai/role: encode
 {{- end }}
 
-{{/* Create labels for the decode deployment/LWS */}}
-{{- define "llm-d-modelservice.decodelabels" -}}
+{{/* Create labels for the prefill-decode deployment/LWS */}}
+{{- define "llm-d-modelservice.prefillDecodelabels" -}}
 {{ include "llm-d-modelservice.pdlabels" . }}
-llm-d.ai/role: decode
+llm-d.ai/role: prefill-decode
 {{- end }}
 
 {{/* Create node affinity from acceleratorTypes in Values */}}
@@ -233,10 +233,10 @@ Required number of GPU per worker -- dpl * tp
 
 {{/*
 Port on which vllm container should listen.
-Context is helm root context plus key "role" ("decode" or "prefill")
+Context is helm root context plus key "role" ("prefill-decode" or "encode")
 */}}
 {{- define "llm-d-modelservice.vllmPort" -}}
-{{- if or (eq .role "prefill") (eq .Values.routing.proxy.enabled false) }}
+{{- if or (eq .role "encode") (eq .Values.routing.proxy.enabled false) }}
 {{- .Values.routing.servicePort }}
 {{- else }}
 {{- .Values.routing.proxy.targetPort }}
@@ -335,14 +335,14 @@ resources:
 {{- end }}
 {{- end }}
 
-{{/* prefill name */}}
-{{- define "llm-d-modelservice.prefillName" -}}
-{{ include "llm-d-modelservice.fullname" . }}-prefill
+{{/* encode name */}}
+{{- define "llm-d-modelservice.encodeName" -}}
+{{ include "llm-d-modelservice.fullname" . }}-encode
 {{- end }}
 
-{{/* decode name */}}
-{{- define "llm-d-modelservice.decodeName" -}}
-{{ include "llm-d-modelservice.fullname" . }}-decode
+{{/* prefill-decode name */}}
+{{- define "llm-d-modelservice.prefillDecodeName" -}}
+{{ include "llm-d-modelservice.fullname" . }}-prefill-decode
 {{- end }}
 
 {{/* P/D service account name */}}
@@ -702,16 +702,16 @@ context is a dict with helm root context plus:
 
 {{/*
 OpenTelemetry tracing environment variables for vLLM containers
-Requires: .Values.tracing, .role ("decode" or "prefill")
+Requires: .Values.tracing, .role ("prefill-decode" or "encode")
 Returns: YAML list of environment variables if tracing is enabled, empty otherwise
 */}}
 {{- define "llm-d-modelservice.tracingEnv" -}}
 {{- if and .Values.tracing .Values.tracing.enabled }}
 {{- $serviceName := "" }}
-{{- if eq .role "decode" }}
-  {{- $serviceName = .Values.tracing.serviceNames.vllmDecode }}
-{{- else if eq .role "prefill" }}
-  {{- $serviceName = .Values.tracing.serviceNames.vllmPrefill }}
+{{- if eq .role "prefill-decode" }}
+  {{- $serviceName = .Values.tracing.serviceNames.vllmPrefillDecode }}
+{{- else if eq .role "encode" }}
+  {{- $serviceName = .Values.tracing.serviceNames.vllmEncode }}
 {{- end }}
 - name: OTEL_SERVICE_NAME
   value: {{ $serviceName | quote }}

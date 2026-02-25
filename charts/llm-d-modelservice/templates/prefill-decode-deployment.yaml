@@ -1,0 +1,64 @@
+{{- if and (not .Values.requester.enable) .Values.prefillDecode.create (not .Values.multinode) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "llm-d-modelservice.prefillDecodeName" . }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+  {{- $warning := "" }}
+  {{- if .Values.prefillDecode.containers }}
+  {{- $firstContainer := index .Values.prefillDecode.containers 0 }}
+  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.prefillDecode.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer) }}
+  {{- end }}
+  {{- if or .Values.prefillDecode.annotations $warning }}
+  annotations:
+    {{- if .Values.prefillDecode.annotations }}
+    {{- toYaml .Values.prefillDecode.annotations | nindent 4 }}
+    {{- end }}
+    {{- if $warning }}
+    llm-d.ai/accelerator-warning: {{ $warning | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  replicas: {{ ternary .Values.prefillDecode.replicas 1 (hasKey .Values.prefillDecode "replicas") }}
+  selector:
+    matchLabels:
+      {{- include "llm-d-modelservice.prefillDecodelabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "llm-d-modelservice.prefillDecodelabels" . | nindent 8 }}
+      {{- if .Values.prefillDecode.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.prefillDecode.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.prefillDecode.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.prefillDecode.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if or (.Values.prefillDecode.initContainers) (eq .Values.routing.proxy.enabled true) }}
+      initContainers:
+      {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 8 }}
+      {{- if .Values.prefillDecode.initContainers }}
+      {{- toYaml .Values.prefillDecode.initContainers | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- if hasKey .Values.prefillDecode "enableServiceLinks" }}
+      enableServiceLinks: {{ .Values.prefillDecode.enableServiceLinks }}
+      {{- end }}
+      {{- if hasKey .Values.prefillDecode "terminationGracePeriodSeconds" }}
+      terminationGracePeriodSeconds: {{ .Values.prefillDecode.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- (include "llm-d-modelservice.modelPod" (dict "role" "prefill-decode" "pdSpec" .Values.prefillDecode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
+      {{- with .Values.prefillDecode.containers }}
+      containers:
+        {{- range . }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "prefill-decode" "container" . "parallelism" $.Values.prefillDecode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.prefillDecode)) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.prefillDecode.tolerations }}
+      tolerations:
+        {{- toYaml .Values.prefillDecode.tolerations | nindent 8 }}
+      {{- end }}
+{{- end }}

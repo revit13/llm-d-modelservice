@@ -1,0 +1,41 @@
+{{- if and .Values.prefillDecode.create .Values.prefillDecode.monitoring.podmonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "llm-d-modelservice.prefillDecodeName" . }}-podmonitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    app.kubernetes.io/component: prefill-decode
+  {{- with .Values.prefillDecode.monitoring.podmonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.prefillDecode.monitoring.podmonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "llm-d-modelservice.prefillDecodelabels" . | nindent 6 }}
+  podMetricsEndpoints:
+  # For decode service, this is port 8200. Must use port name.
+  - port: {{ .Values.prefillDecode.monitoring.podmonitor.portName | default "metrics" | quote }}
+    path: {{ .Values.prefillDecode.monitoring.podmonitor.path | default "/metrics" }}
+    interval: {{ .Values.prefillDecode.monitoring.podmonitor.interval | default "30s" }}
+    {{- with .Values.prefillDecode.monitoring.podmonitor.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    {{- with .Values.prefillDecode.monitoring.podmonitor.relabelings }}
+    relabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.prefillDecode.monitoring.podmonitor.metricRelabelings }}
+    metricRelabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- with .Values.prefillDecode.monitoring.podmonitor.namespaceSelector }}
+  namespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

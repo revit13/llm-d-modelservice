@@ -349,8 +349,9 @@ resources:
 
 {{/* P/D service account name */}}
 {{- define "llm-d-modelservice.pdServiceAccountName" -}}
-{{- if or .Values.serviceAccountOverride -}}
-{{ .Values.serviceAccountOverride }}
+{{- $values := .Values | default dict -}}
+{{- if $values.serviceAccountOverride -}}
+{{ $values.serviceAccountOverride }}
 {{- else -}}
 {{ include "llm-d-modelservice.fullname" . }}
 {{- end -}}

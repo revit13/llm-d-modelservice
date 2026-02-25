@@ -25,7 +25,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.prefillDecode.autoscaling.enabled }}
-  replicas: {{ ternary .Values.prefillDecode.replicas 1 (hasKey .Values.decode "replicas") }}
+  replicas: {{ ternary .Values.prefillDecode.replicas 1 (hasKey .Values.prefillDecode "replicas") }}
   {{- end }}
   leaderWorkerTemplate:
     size: {{ int (include "llm-d-modelservice.numWorkers" .Values.prefillDecode.parallelism) }}
@@ -48,11 +48,11 @@ spec:
         {{- end }}
       spec:
         {{- /* DEPRECATED; use extraConfig.hostIPC instead */ -}}
-        {{- if hasKey .Values.decode "hostIPC" }}
+        {{- if hasKey .Values.prefillDecode "hostIPC" }}
         hostIPC: {{ .Values.prefillDecode.hostIPC }}
         {{- end }}
         {{- /* DEPRECATED; use extraConfig.hostPID instead */ -}}
-        {{- if hasKey .Values.decode "hostPID" }}
+        {{- if hasKey .Values.prefillDecode "hostPID" }}
         hostPID: {{ .Values.prefillDecode.hostPID }}
         {{- end }}
         {{- if or (.Values.prefillDecode.initContainers) (eq .Values.routing.proxy.enabled true) }}
@@ -62,17 +62,17 @@ spec:
         {{- toYaml .Values.prefillDecode.initContainers | nindent 10 }}
         {{- end }}
         {{- end }}
-        {{- if hasKey .Values.decode "enableServiceLinks" }}
+        {{- if hasKey .Values.prefillDecode "enableServiceLinks" }}
         enableServiceLinks: {{ .Values.prefillDecode.enableServiceLinks }}
         {{- end }}
-        {{- if hasKey .Values.decode "terminationGracePeriodSeconds" }}
+        {{- if hasKey .Values.prefillDecode "terminationGracePeriodSeconds" }}
         terminationGracePeriodSeconds: {{ .Values.prefillDecode.terminationGracePeriodSeconds }}
         {{- end }}
-        {{ (include "llm-d-modelservice.modelPod" (dict "role" "prefill-decode" "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
+        {{ (include "llm-d-modelservice.modelPod" (dict "role" "prefill-decode" "pdSpec" .Values.prefillDecode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
         {{- with .Values.prefillDecode.containers }}
         containers:
           {{- range . }}
-        {{- (include "llm-d-modelservice.container" (dict "role" "prefill-decode" "container" . "parallelism" $.Values.prefillDecode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.decode)) | nindent 8 }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "prefill-decode" "container" . "parallelism" $.Values.prefillDecode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.prefillDecode)) | nindent 8 }}
           {{- end }}
         {{- end }}
         {{- if .Values.prefillDecode.nodeSelector }}

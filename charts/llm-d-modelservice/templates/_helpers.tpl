@@ -488,6 +488,8 @@ context is a dict with helm root context plus:
   {{- with .container.env }}
     {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
+  - name: VLLM_USE_V1
+    value: "0"
   {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
   {{- /* insert envs based on what modelArtifact prefix */}}
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}

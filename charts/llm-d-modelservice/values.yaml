@@ -543,6 +543,13 @@ encode:
         - "--mm-encoder-only"
         - "--ec-transfer-config"
         - '{"ec_connector": "ECExampleConnector", "ec_role": "ec_producer", "ec_connector_extra_config": {"shared_storage_path": "/shared-ec-cache"}}'
+        - "--gpu-memory-utilization"
+        - "0.01"
+        - "--enforce-eager"
+        - "--enable-request-id-headers"
+        - "--no-enable-prefix-caching"
+        - "--max-num-seqs"
+        - "128"
       # @schema
       # items:
       #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar

@@ -545,6 +545,8 @@ encode:
         - '{"ec_connector": "ECExampleConnector", "ec_role": "ec_producer", "ec_connector_extra_config": {"shared_storage_path": "/shared-ec-cache"}}'
         - "--gpu-memory-utilization"
         - "0.01"
+        - "--max-num-batched-tokens"
+        - "114688"
         - "--enforce-eager"
         - "--enable-request-id-headers"
         - "--no-enable-prefix-caching"

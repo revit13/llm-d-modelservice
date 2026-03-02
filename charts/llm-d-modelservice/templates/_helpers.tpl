@@ -588,8 +588,6 @@ args:
   - --data-parallel-size-local
   - {{ $dataLocalParallelism | quote }}
   {{- end }}
-  - --served-model-name
-  - {{ .Values.modelArtifacts.name | quote }}
 {{- /* Add tracing args */}}
 {{- (include "llm-d-modelservice.vllmTracingArgs" .) | nindent 2 }}
 {{- with .container.args }}
@@ -618,8 +616,6 @@ args:
   - --data-parallel-size-local
   - {{ $dataLocalParallelism | quote }}
   {{- end }}
-  - --served-model-name
-  - {{ .Values.modelArtifacts.name | quote }}
 {{- /* Add tracing args */}}
 {{- (include "llm-d-modelservice.vllmTracingArgs" .) | nindent 2 }}
 {{- with .container.args }}

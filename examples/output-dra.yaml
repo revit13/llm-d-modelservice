@@ -60,8 +60,6 @@ spec:
             - "8000"
             - --tensor-parallel-size
             - "2"
-            - --served-model-name
-            - "random/model"
             
             
             - --dtype=float16

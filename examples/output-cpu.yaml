@@ -73,8 +73,6 @@ spec:
             - random/model
             - --port
             - "8200"
-            - --served-model-name
-            - "random/model"
             
           env:
           - name: DP_SIZE
@@ -142,8 +140,6 @@ spec:
             - random/model
             - --port
             - "8000"
-            - --served-model-name
-            - "random/model"
             
           env:
           - name: DP_SIZE

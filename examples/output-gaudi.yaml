@@ -54,8 +54,6 @@ spec:
             - meta-llama/Llama-3.1-8B-Instruct
             - --port
             - "8000"
-            - --served-model-name
-            - "meta-llama/Llama-3.1-8B-Instruct"
             
             
             - --block-size=128

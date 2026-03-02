@@ -97,8 +97,6 @@ spec:
             value: DEBUG
           - name: DP_SIZE
             value: "1"
-          - name: TP_SIZE
-            value: "1"
           - name: DP_SIZE_LOCAL
             value: "1"
           
@@ -193,8 +191,6 @@ spec:
           - name: VLLM_LOGGING_LEVEL
             value: DEBUG
           - name: DP_SIZE
-            value: "1"
-          - name: TP_SIZE
             value: "1"
           - name: DP_SIZE_LOCAL
             value: "1"

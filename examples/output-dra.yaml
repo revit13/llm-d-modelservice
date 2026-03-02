@@ -81,8 +81,6 @@ spec:
             value: "true"
           - name: DP_SIZE
             value: "1"
-          - name: TP_SIZE
-            value: "2"
           - name: DP_SIZE_LOCAL
             value: "1"
           

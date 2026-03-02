@@ -85,8 +85,6 @@ spec:
           env:
           - name: DP_SIZE
             value: "1"
-          - name: TP_SIZE
-            value: "1"
           - name: DP_SIZE_LOCAL
             value: "1"
           

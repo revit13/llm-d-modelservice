@@ -119,8 +119,6 @@ spec:
             value: spawn
           - name: DP_SIZE
             value: "1"
-          - name: TP_SIZE
-            value: "1"
           - name: DP_SIZE_LOCAL
             value: "1"
           
@@ -241,8 +239,6 @@ spec:
           - name: VLLM_WORKER_MULTIPROC_METHOD
             value: spawn
           - name: DP_SIZE
-            value: "1"
-          - name: TP_SIZE
             value: "1"
           - name: DP_SIZE_LOCAL
             value: "1"

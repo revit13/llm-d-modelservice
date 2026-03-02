@@ -699,8 +699,6 @@ context is a dict with helm root context plus:
 {{- define "llm-d-modelservice.parallelismEnv" -}}
 - name: DP_SIZE
   value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
-- name: TP_SIZE
-  value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
 - name: DP_SIZE_LOCAL
   value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
 {{- end }} {{- /* define "llm-d-modelservice.parallelismEnv" */}}

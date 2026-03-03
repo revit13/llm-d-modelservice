@@ -73,8 +73,6 @@ spec:
             - "facebook/opt-125m"
             - --port
             - "8200"
-            - --served-model-name
-            - "facebook/opt-125m"
             
             
             - --enforce-eager
@@ -164,8 +162,6 @@ spec:
             - "facebook/opt-125m"
             - --port
             - "8000"
-            - --served-model-name
-            - "facebook/opt-125m"
             
             
             - --enforce-eager

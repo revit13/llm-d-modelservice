@@ -32,6 +32,11 @@ spec:
       annotations:
         {{- toYaml .Values.encode.podAnnotations | nindent 8 }}
       {{- end }}
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seLinuxOptions:
+          type: spc_t
     spec:
       {{- if .Values.encode.initContainers }}
       initContainers:

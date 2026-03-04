@@ -1,28 +1,16 @@
 {{- if or .Values.encode.create .Values.prefillDecode.create }}
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: ec-cache-pv
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  storageClassName: manual
-  hostPath:
-    path: /tmp/vllm-ec-cache
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ec-cache-pvc
+  name: vllm-shared-storage
+  namespace: epd
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteMany
+  storageClassName: nfs-client-pokprod
   resources:
     requests:
-      storage: 5Gi
+      storage: 50Gi
 {{- end }}
 
 # Made with Bob

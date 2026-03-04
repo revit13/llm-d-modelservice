@@ -73,8 +73,6 @@ spec:
             - /model-cache/path/to/model
             - --port
             - "8200"
-            - --served-model-name
-            - "facebook/opt-125m"
             
             
             - --enforce-eager
@@ -163,8 +161,6 @@ spec:
             - /model-cache/path/to/model
             - --port
             - "8000"
-            - --served-model-name
-            - "facebook/opt-125m"
             
             
             - --enforce-eager

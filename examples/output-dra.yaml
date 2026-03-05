@@ -59,7 +59,7 @@ spec:
             - --port
             - "8000"
             - --tensor-parallel-size
-            - "2"
+            - "1"
             
             
             - --dtype=float16

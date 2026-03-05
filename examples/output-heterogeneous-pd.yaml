@@ -76,7 +76,7 @@ spec:
             - --port
             - "8200"
             - --tensor-parallel-size
-            - "2"
+            - "1"
             - --served-model-name
             - "facebook/opt-125m"
             

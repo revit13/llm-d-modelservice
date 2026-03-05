@@ -72,7 +72,7 @@ llm-d.ai/role: encode
 {{/* Create labels for the prefill-decode deployment/LWS */}}
 {{- define "llm-d-modelservice.prefillDecodelabels" -}}
 {{ include "llm-d-modelservice.pdlabels" . }}
-llm-d.ai/role: prefill-decode
+llm-d.ai/role: all
 {{- end }}
 
 {{/* Create node affinity from acceleratorTypes in Values */}}

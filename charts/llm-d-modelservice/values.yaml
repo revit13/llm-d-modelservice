@@ -325,7 +325,7 @@ prefillDecode:
       # @schema
       args:
         - "--ec-transfer-config"
-        - '{"ec_connector": "ECExampleConnector", "ec_role": "ec_consumer", "ec_connector_extra_config": {"shared_storage_path": "/shared-ec-cache"}}'
+        - '{"ec_connector": "ECCPUConnector", "ec_role": "ec_consumer"}'
       # @schema
       # items:
       #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
@@ -364,8 +364,6 @@ prefillDecode:
       volumeMounts:
         - name: metrics-volume
           mountPath: /.config
-        - name: ec-cache
-          mountPath: /shared-ec-cache
   # @schema
   # type: array
   # items:
@@ -375,9 +373,6 @@ prefillDecode:
   volumes:
     - name: metrics-volume
       emptyDir: {}
-    - name: ec-cache
-      persistentVolumeClaim:
-        claimName: ec-cache-pvc
 
   # @schema
   # type: array
@@ -542,7 +537,7 @@ encode:
       args:
         - "--mm-encoder-only"
         - "--ec-transfer-config"
-        - '{"ec_connector": "ECExampleConnector", "ec_role": "ec_producer", "ec_connector_extra_config": {"shared_storage_path": "/shared-ec-cache"}}'
+        - '{"ec_connector": "ECCPUConnector", "ec_role": "ec_producer"}'
         - "--gpu-memory-utilization"
         - "0.01"
         - "--max-num-batched-tokens"
@@ -589,8 +584,6 @@ encode:
       volumeMounts:
         - name: metrics-volume
           mountPath: /.config
-        - name: ec-cache
-          mountPath: /shared-ec-cache
   # @schema
   # type: array
   # items:
@@ -600,9 +593,6 @@ encode:
   volumes:
     - name: metrics-volume
       emptyDir: {}
-    - name: ec-cache
-      persistentVolumeClaim:
-        claimName: ec-cache-pvc
 
   # @schema
   # type: array
